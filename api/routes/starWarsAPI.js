@@ -7,105 +7,110 @@ router.get("/:characterId", async function (req, res, next) {
   const characterId = req.params.characterId;
   const url = `https://swapi.dev/api/people/${characterId}/?format=json`;
 
-  const characterData = await fetch(url)
+  let characterData = await fetch(url)
     .then(function (response) {
-      console.log(response);
       let data = response.json();
-      console.log(data);
       return data;
     })
     .catch(function (error) {
-      // if there's an error, log it
       console.log(error);
     });
 
-  const filmsDetails =
-    characterData.films.length <= 0
-      ? null
-      : await Promise.resolve(getMoviesData(characterData.films));
-  const planetDetails = characterData.planet
-    ? null
-    : await Promise.resolve(getPlanetData(characterData.homeworld));
-  console.log(
-    "speicies detail: " +
-      characterData.species +
-      typeof characterData.species +
-      " " +
-      characterData.species.length
-  );
-  const speciesDetails =
-    characterData.species.length <= 0
-      ? null
-      : await Promise.resolve(getSpeciesData(characterData.species));
+  let dataFetchPromises = [];
+  if (characterData.films.length)
+    dataFetchPromises.push(getMoviesData(characterData));
+  if (characterData.planet)
+    dataFetchPromises.push(getPlanetData(characterData));
+  if (characterData.species.length)
+    dataFetchPromises.push(getSpeciesData(characterData));
 
-  const characterDataResponse = {
-    name: characterData.name,
-    height: characterData.height,
-    mass: characterData.mass,
-    hair_color: characterData.hair_color,
-    skin_color: characterData.skin_color,
-    gender: characterData.gender,
-    birth_year: characterData.birth_year,
-    films_data: filmsDetails,
-    home_planet_data: planetDetails,
-    species_data: speciesDetails,
-  };
+  const fetchedData = await Promise.all(dataFetchPromises);
 
-  //console.log("character data" + JSON.stringify(characterDataResponse))
-  res.send(characterDataResponse);
+  characterData["filmsDetails"] = fetchedData[0];
+  characterData["planetDetails"] = fetchedData[1];
+  characterData["speciesDetails"] = fetchedData[2];
+
+  const filteredAndTransformedCharData = (({
+    name,
+    height,
+    mass,
+    hair_color,
+    skin_color,
+    gender,
+    birth_year,
+    filmsDetails,
+    planetDetails,
+    speciesDetails,
+  }) => ({
+    name,
+    height,
+    mass,
+    hair_color,
+    skin_color,
+    gender,
+    birth_year,
+    filmsDetails,
+    planetDetails,
+    speciesDetails,
+  }))(characterData);
+  res.send(filteredAndTransformedCharData);
 });
 
 module.exports = router;
 
 /**
  * @param {string[]} films an array of film url strings
- * @return {Object[]} Array<{title, director, producers, release_date}>
+ * @return {Promise<Object[]>} Array<{title, director, producers, release_date}>
  */
-async function getMoviesData(films) {
-  let filmsArray = [];
-  console.log(films + "Array?: " + Array.isArray(films));
-  await Promise.all(films.map((f) => fetch(f)))
-    .then((responses) => Promise.all(responses.map((res) => res.json())))
-    .then((jsonResponses) => {
-      filmsArray = jsonResponses;
-    });
-  return filmsArray.map((film) => {
-    return {
-      title: film.title,
-      director: film.director,
-      producers: film.producers,
-      release_date: film.release_date,
-    };
+async function getMoviesData({ films }) {
+  return new Promise(async function (resolve, reject) {
+    await Promise.all(films.map((f) => fetch(f)))
+      .then((responses) => Promise.all(responses.map((res) => res.json())))
+      .then((jsonResponses) => {
+        let transformedFilmData = jsonResponses.map((film) => {
+          const { title, director, producers, release_date } = film;
+          return { title, director, producers, release_date };
+        });
+        resolve(transformedFilmData);
+      });
   });
 }
 
 /**
  * @param {string} planetUrl a url string
- * @return {Object[]} {name, terrain, population}
+ * @return {Promise<Object[]>} {name, terrain, population}
  */
-async function getPlanetData(planetUrl) {
-  let planetData = await Promise.resolve(fetch(`${planetUrl}`)).then((res) =>
-    res.json()
-  );
-  return {
-    name: planetData.name,
-    terrain: planetData.terrain,
-    population: planetData.population,
-  };
+async function getPlanetData({ homeworld }) {
+  const planetUrl = planetUrl;
+  return new Promise((resolve, reject) => {
+    fetch(`${planetUrl}`)
+      .then((res) => res.json())
+      .then((jsonData) => {
+        const { name, terrain, population } = jsonData;
+        resolve({ name, terrain, population });
+      })
+      .catch((e) => reject(e));
+  });
 }
 
 /**
  * @param {string} speciesUrl a url string
- * @return {Object[]} {average_lifespan, classification, language}
+ * @return {Promise<Object[]>} {average_lifespan, classification, language}
  */
-async function getSpeciesData(speciesUrl) {
-  let speciesData = await Promise.resolve(fetch(`${speciesUrl}`)).then((res) =>
-    res.json()
-  );
-  return {
-    name: speciesData.name,
-    average_lifespan: speciesData.average_lifespan,
-    classification: speciesData.classification,
-    language: speciesData.language,
-  };
+async function getSpeciesData({ species }) {
+  const speciesURL = species;
+  return new Promise((resolve, reject) => {
+    fetch(`${speciesURL}`)
+      .then((res) => res.json())
+      .then((jsonData) => {
+        const { name, average_lifespan, classification, language } = jsonData;
+        resolve({
+          name,
+          average_lifespan,
+          classification,
+          language,
+        });
+      })
+      .catch((e) => reject(e));
+  });
 }
