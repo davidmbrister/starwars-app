@@ -1,34 +1,33 @@
-const { response } = require("express");
-var express = require("express");
-var fetch = require("node-fetch");
-var router = express.Router();
+const { response } = require("express")
+var express = require("express")
+var fetch = require("node-fetch")
+var router = express.Router()
 
 router.get("/:characterId", async function (req, res, next) {
-  const characterId = req.params.characterId;
-  const url = `https://swapi.dev/api/people/${characterId}/?format=json`;
+  const characterId = req.params.characterId
+  const url = `https://swapi.dev/api/people/${characterId}/?format=json`
 
   let characterData = await fetch(url)
     .then(function (response) {
-      let data = response.json();
-      return data;
+      let data = response.json()
+      return data
     })
     .catch(function (error) {
-      console.log(error);
-    });
+      console.log(error)
+    })
 
-  let dataFetchPromises = [];
+  let dataFetchPromises = []
   if (characterData.films.length)
-    dataFetchPromises.push(getMoviesData(characterData));
-  if (characterData.planet)
-    dataFetchPromises.push(getPlanetData(characterData));
+    dataFetchPromises.push(getMoviesData(characterData))
+  if (characterData.homeworld)
+    dataFetchPromises.push(getPlanetData(characterData))
   if (characterData.species.length)
-    dataFetchPromises.push(getSpeciesData(characterData));
+    dataFetchPromises.push(getSpeciesData(characterData))
 
-  const fetchedData = await Promise.all(dataFetchPromises);
-
-  characterData["filmsDetails"] = fetchedData[0];
-  characterData["planetDetails"] = fetchedData[1];
-  characterData["speciesDetails"] = fetchedData[2];
+  const fetchedData = await Promise.all(dataFetchPromises)
+  characterData["filmsDetails"] = fetchedData[0]
+  characterData["planetDetails"] = fetchedData[1]
+  characterData["speciesDetails"] = fetchedData[2]
 
   const filteredAndTransformedCharData = (({
     name,
@@ -52,11 +51,11 @@ router.get("/:characterId", async function (req, res, next) {
     filmsDetails,
     planetDetails,
     speciesDetails,
-  }))(characterData);
-  res.send(filteredAndTransformedCharData);
-});
+  }))(characterData)
+  res.send(filteredAndTransformedCharData)
+})
 
-module.exports = router;
+module.exports = router
 
 /**
  * @param {string[]} films an array of film url strings
@@ -68,12 +67,12 @@ async function getMoviesData({ films }) {
       .then((responses) => Promise.all(responses.map((res) => res.json())))
       .then((jsonResponses) => {
         let transformedFilmData = jsonResponses.map((film) => {
-          const { title, director, producers, release_date } = film;
-          return { title, director, producers, release_date };
-        });
-        resolve(transformedFilmData);
-      });
-  });
+          const { title, director, producers, release_date } = film
+          return { title, director, producers, release_date }
+        })
+        resolve(transformedFilmData)
+      })
+  })
 }
 
 /**
@@ -81,16 +80,16 @@ async function getMoviesData({ films }) {
  * @return {Promise<Object[]>} {name, terrain, population}
  */
 async function getPlanetData({ homeworld }) {
-  const planetUrl = planetUrl;
+  const planetUrl = homeworld
   return new Promise((resolve, reject) => {
     fetch(`${planetUrl}`)
       .then((res) => res.json())
       .then((jsonData) => {
-        const { name, terrain, population } = jsonData;
-        resolve({ name, terrain, population });
+        const { name, terrain, population } = jsonData
+        resolve({ name, terrain, population })
       })
-      .catch((e) => reject(e));
-  });
+      .catch((e) => reject(e))
+  })
 }
 
 /**
@@ -98,19 +97,29 @@ async function getPlanetData({ homeworld }) {
  * @return {Promise<Object[]>} {average_lifespan, classification, language}
  */
 async function getSpeciesData({ species }) {
-  const speciesURL = species;
+  const speciesURL = species
   return new Promise((resolve, reject) => {
     fetch(`${speciesURL}`)
       .then((res) => res.json())
       .then((jsonData) => {
-        const { name, average_lifespan, classification, language } = jsonData;
+        const { name, average_lifespan, classification, language } = jsonData
         resolve({
           name,
           average_lifespan,
           classification,
           language,
-        });
+        })
       })
-      .catch((e) => reject(e));
-  });
+      .catch((e) => reject(e))
+  })
 }
+
+
+
+[[{"title":"A New Hope","director":"George Lucas","release_date":"1977-05-25"},
+{"title":"The Empire Strikes Back","director":"Irvin Kershner","release_date":"1980-05-17"},
+{"title":"Return of the Jedi","director":"Richard Marquand","release_date":"1983-05-25"},
+{"title":"The Phantom Menace","director":"George Lucas","release_date":"1999-05-19"},
+{"title":"Attack of the Clones","director":"George Lucas","release_date":"2002-05-16"},
+{"title":"Revenge of the Sith","director":"George Lucas","release_date":"2005-05-19"}],
+{"name":"Droid","average_lifespan":"indefinite","classification":"artificial","language":"n/a"}]
