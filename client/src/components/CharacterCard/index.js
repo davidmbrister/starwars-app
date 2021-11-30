@@ -10,7 +10,6 @@ import Divider from "@mui/material/Divider";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
-import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 const HtmlTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} followCursor />
@@ -40,15 +39,6 @@ const CharacterCard = ({ characterId }) => {
 function CharacterTemplate(characterData) {
   const characterDetails = characterData.data;
   const { filmsDetails, speciesDetails, planetDetails } = characterDetails;
-  const [open, setOpen] = React.useState(false);
-
-  const handleTooltipClose = () => {
-    setOpen(false);
-  };
-
-  const handleTooltipOpen = () => {
-    setOpen(true);
-  };
   const card = (
     <>
       <CardContent>
