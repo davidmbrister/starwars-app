@@ -1,9 +1,7 @@
 import React from 'react'
 import Fetch from '../../Fetch'
-import { useCard } from '../../hooks/useCard'
 
 const Character = ({characterId}) => {
-  {cardData} = useCard()
   return (
     <div>
       <Fetch 

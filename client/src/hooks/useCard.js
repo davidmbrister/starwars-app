@@ -1,36 +1,31 @@
 import React, { createContext, useState, useContext } from "react";
-import { v4 } from "uuid";
-// The terms context and Provider are a little foggy to me here
 
-// setting the global context within a module. doesn't have to be a global context but in this
-// case it happens to be
+// The purpose of this shared context is to allow the changing, from multiple components (List, SearchBox),
+// of the id used for fetching a single character's info
 
-// The color json variable can be raw json returned from a backend API route
-const CardContext = createContext();
-// I can think of this as a custom useState built from useContext
-export const useCard = () => useContext(CardContext);
+const CardIDContext = createContext();
 
-export function CardProvider ({ children }) {
-  const [card, setCard] = useState('');
+export const useCardId = () => useContext(CardIDContext);
+
+export function CardProvider({ children }) {
+  // store cardID as a string but do a simple parseInt to make sure it's an int
+  const [cardID, setCardID] = useState(1);
   const isValidInput = (id) => {
-    if (isNaN(parseInt(id))) {
-      return false
+   /*  if (isNaN(parseInt(id)) || id === cardID) {
+      return false;
     } else {
-      return true
-    } 
-  }
-    
+      return true;
+    } */ return true
+  };
+  const setCardData = (id) => {
+    //if (!isValidInput(id)) return;
+    setCardID(id);
+  };
+  const getCardData = () => cardID
 
-    const setCardData = (id) => {
-      if(isValidInput(id)) return;
-
-      setCard(
-        (color => (color.id === id ? {...color, rating} : color))
-      );
-    }
-    return (
-      <CardContext.Provider value={{setCardData}}>
-        {children}
-      </CardContext.Provider>
-    )
+  return (
+    <CardIDContext.Provider value={{ setCardData, getCardData }}>
+      {children}
+    </CardIDContext.Provider>
+  );
 }

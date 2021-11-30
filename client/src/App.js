@@ -2,26 +2,25 @@ import './App.css';
 import Character from './components/Character';
 import NameList from './components/NameList';
 import SearchBar from "./components/SearchBar";
-import { useInput } from './hooks/useInput';
+import  {useCardId}  from './hooks/useCard';
 
-const [input, setInput] = useInput('');
-const [cardData, setCardData] = useCard(null)
 
-const updateInput = async (input) => {
+/* const updateInput = async (input) => {
   const filtered = countryListDefault.filter(country => {
-   return country.name.toLowerCase().includes(input.toLowerCase())
+    return country.name.toLowerCase().includes(input.toLowerCase())
   })
   setInput(input);
-}
+} */
 
 function App() {
-
+ const {getCardData} = useCardId()
+ const characterID =  getCardData() ?? 1
   return (
-    <>
-    <SearchBar></SearchBar>
-    <Character characterId={8} />
-    <NameList />
-    </>
+      <>
+        <SearchBar />
+        <Character characterId={characterID ?? 1} />
+        <NameList />
+      </>
   );
 }
 
