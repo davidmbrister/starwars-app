@@ -11,14 +11,14 @@ export function CardProvider({ children }) {
   // store cardID as a string but do a simple parseInt to make sure it's an int
   const [cardID, setCardID] = useState(1);
   const isValidInput = (id) => {
-   /*  if (isNaN(parseInt(id)) || id === cardID) {
+    if (isNaN(parseInt(id)) || id === cardID) {
       return false;
     } else {
       return true;
-    } */ return true
+    } 
   };
   const setCardData = (id) => {
-    //if (!isValidInput(id)) return;
+    if (!isValidInput(id)) return;
     setCardID(id);
   };
   const getCardData = () => cardID

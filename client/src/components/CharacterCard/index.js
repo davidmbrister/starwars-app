@@ -29,7 +29,7 @@ const CharacterCard = ({ characterId }) => {
       {!characterId ? null : (
         <Fetch
           uri={`http://localhost:9000/starWarsAPI/${characterId}`}
-          renderSuccess={CharacterCard}
+          renderSuccess={CharacterTemplate}
         />
       )}
     </div>
@@ -159,8 +159,8 @@ function CharacterTemplate(characterData) {
 
   return (
     <Box sx={{ minWidth: 275 }}>
-      <Card variant="outlined" raised={3}>
-        {CharacterTemplate}
+      <Card variant="outlined">
+        {card}
       </Card>
     </Box>
   );

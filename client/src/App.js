@@ -1,5 +1,5 @@
 import './App.css';
-import Character from './components/Character';
+import CharacterCard from './components/CharacterCard';
 import NameList from './components/NameList';
 import SearchBar from "./components/SearchBar";
 import  {useCardId}  from './hooks/useCard';
@@ -18,7 +18,7 @@ function App() {
   return (
       <>
         <SearchBar />
-        <Character characterId={characterID ?? 1} />
+        <CharacterCard characterId={characterID ?? 1} />
         <NameList />
       </>
   );

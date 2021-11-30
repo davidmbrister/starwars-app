@@ -1,16 +1,27 @@
 import React from 'react';
 import { useCardId } from '../../hooks/useCard';
+import debounce from 'lodash.debounce';
+import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 
-const SearchBar = ({searchTerm,setSearchTerm}) => {
+
+const SearchBar = () => {
   const {setCardData} = useCardId()
+  const useSearchStarwarsHero = () => useDebouncedSearch(text => setCardData(text))
+  const { inputText, setInputText, searchResults } = useSearchStarwarsHero();
   const BarStyling = {width:"20rem",background:"#F2F1F9", border:"none", padding:"0.5rem"};
   return (
+    <>
     <input 
      style={BarStyling}
-     value={searchTerm}
+     value={inputText}
      placeholder={"Search character by ID"}
-     onChange={(e) => setCardData(e.target.value)}
+     onChange={(e) => setInputText(e.target.value)}
     />
+    <p>
+      {searchResults.loading && <div>Processing input...</div>}
+      {searchResults.error && <div>Error: {searchResults.error.message}</div>}
+    </p>
+    </>
   );
 }
 
