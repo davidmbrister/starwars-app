@@ -115,11 +115,3 @@ async function getSpeciesData({ species }) {
 }
 
 
-
-[[{"title":"A New Hope","director":"George Lucas","release_date":"1977-05-25"},
-{"title":"The Empire Strikes Back","director":"Irvin Kershner","release_date":"1980-05-17"},
-{"title":"Return of the Jedi","director":"Richard Marquand","release_date":"1983-05-25"},
-{"title":"The Phantom Menace","director":"George Lucas","release_date":"1999-05-19"},
-{"title":"Attack of the Clones","director":"George Lucas","release_date":"2002-05-16"},
-{"title":"Revenge of the Sith","director":"George Lucas","release_date":"2005-05-19"}],
-{"name":"Droid","average_lifespan":"indefinite","classification":"artificial","language":"n/a"}]
