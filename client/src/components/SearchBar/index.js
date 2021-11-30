@@ -8,7 +8,7 @@ const SearchBar = () => {
   const {setCardData} = useCardId()
   const useSearchStarwarsHero = () => useDebouncedSearch(text => setCardData(text))
   const { inputText, setInputText, searchResults } = useSearchStarwarsHero();
-  const BarStyling = {width:"20rem",background:"#F2F1F9", border:"none", padding:"0.5rem"};
+  const BarStyling = {width:"20rem",background:"#F2F1F9", border:"black 1px dotted", padding:"0.5rem"};
   return (
     <>
     <input 

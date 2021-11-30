@@ -10,6 +10,7 @@ import Divider from "@mui/material/Divider";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 const HtmlTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} followCursor />
@@ -39,7 +40,15 @@ const CharacterCard = ({ characterId }) => {
 function CharacterTemplate(characterData) {
   const characterDetails = characterData.data;
   const { filmsDetails, speciesDetails, planetDetails } = characterDetails;
-  console.log("what's this look like: " + JSON.stringify(filmsDetails));
+  const [open, setOpen] = React.useState(false);
+
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
   const card = (
     <>
       <CardContent>
@@ -75,7 +84,9 @@ function CharacterTemplate(characterData) {
           {characterDetails.age}
         </Typography>
       </CardContent>
-      <h3>Hover over the stuff below to get more info...</h3>
+      <Typography sx={{ mb: 0.5, ml: 0.5, mr: 0.5}} color="text.secondary">
+        Hover over the stuff below to get more info...
+      </Typography>
       <Divider />
       <CardActions>
         {!characterDetails ? null : (
@@ -85,8 +96,7 @@ function CharacterTemplate(characterData) {
                 <Typography variant="h5" color="inherit">
                   Movie Details
                 </Typography>
-                {"Here are the movies"} <b>{characterDetails.name}</b>{" "}
-                {"has appeared in,"}
+                {"Here are the movies featuring"} <b>{characterDetails.name}</b>{" "}
                 {filmsDetails.map((film) => (
                   <>
                     <h3 key={film.title}>{film.title}</h3>
@@ -158,7 +168,7 @@ function CharacterTemplate(characterData) {
   );
 
   return (
-    <Box sx={{ minWidth: 275 }}>
+    <Box sx={{ minWidth: 275, padding: 23}}>
       <Card variant="outlined">
         {card}
       </Card>
